@@ -1,3 +1,5 @@
+""" Images that failed thresholding tend to be blank, this just filters them into a new dataset. TODO add failures due to hair here. """
+
 import numpy as np
 import pandas as pd
 from PIL import Image

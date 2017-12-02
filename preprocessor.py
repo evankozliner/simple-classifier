@@ -6,14 +6,9 @@ import math
 from PIL import Image,ImageFile
 from sklearn.decomposition import IncrementalPCA
 
-# Median dimensions are 
-# width: 1024, height: 768
-# mean dimensions are
-# width: 2061 height: 1410
-#HEIGHT      = 768
-#WIDTH       = 1024
-
 # Median dimensions for the lesions after segmentation
+# NOTE these are *not* the median dimensions of the ISIC dataset, they are the
+# median dimensions of the ISIC combined with another dataset 
 HEIGHT = 510
 WIDTH = 766
 
@@ -21,6 +16,7 @@ CHANNELS    = 3
 DATA_DIR = 'bound_box_final_2/'
 N_COMPS = 10
 BATCH_SIZE=100
+OUTPUT_NAME = 'final_isic_thres'
 
 def timer(f):
     def wrapper(*args, **kwargs):
@@ -93,13 +89,10 @@ def reduce_dimensionality(dataset):
         if i % 10 == 0:
             print "{}% complete.".format(float(i) / num_batches * 100)
 
-    #reduced_data = pca.fit_transform(data_no_class)
-
     print "PCA complete for {} components. Explained variance: {}".\
             format(N_COMPS, np.sum(pca.explained_variance_ratio_))
     print reduced_data.shape
     print y.shape
-    #reduced_data = pca.transform(data_no_class)
     reduced_data_with_class = np.hstack((reduced_data,y))
     return reduced_data_with_class
 
@@ -128,7 +121,6 @@ def build_and_write_dataset(dataset):
 
 @timer
 def build_and_write_reduced_dataset(dataset):
-    # TODO format with num of 
     reduced_dataset_file = dataset + "_reduced.npy"
     reduced_matrix = reduce_dimensionality(dataset + '.npy')
     print "Saving {}".format(reduced_dataset_file)
@@ -143,5 +135,5 @@ if __name__ == "__main__":
         # See https://github.com/scikit-learn/scikit-learn/issues/6452
         raise ValueError("Number of components must be < \
                 batch size.")
-    main('final_isic_thres')
+    main(OUTPUT_NAME)
 
